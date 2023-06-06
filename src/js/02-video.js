@@ -1,30 +1,14 @@
 'use sctrict';
 
 import Player from '@vimeo/player';
-import throttle from 'lodash';
+import throttle from 'lodash.throttle';
 
 const iframe = document.querySelector('iframe');
 const player = new Player(iframe);
+const LOCALSTORAGE_KEY = 'videoplayer-current-time';
 
-const currentTime = data => {
-    localStorage.setItem('videoplayer-current-time', data.seconds);
+player.setCurrentTime(localStorage.getItem(LOCALSTORAGE_KEY) || 0);
 
-    if (data.duration === data.seconds) {
-        data.seconds = 0;
-        localStorage.setItem('videoplayer-current-time', data.seconds);
-    }
-};
+const setTime = time => localStorage.setItem(LOCALSTORAGE_KEY, time.seconds);
 
-player.on('timeupdate', throttle(currentTime, 1000));
-
-player
-.setCurrentTime(localStorage.getItem('videoplayer-current-time'))
-.then(function (seconds){})
-.catch(function (error) {
-    switch (error.name) {
-        case 'RangeError':
-            break;
-            default:
-                break;
-    }
-})
+player.on('timeupdate', throttle(setTime, 1000));

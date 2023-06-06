@@ -1,60 +1,38 @@
 'use strict';
 
-import throttle from 'lodash';
+import throttle from 'lodash.throttle';
 
+const LOCALSTORAGE_KEY = 'feedback-form-state';
 const form = document.querySelector('.feedback-form');
-let formData = {
-    email: '',
-    message: '',
-}
-
-const SaveCurrentFormVal = () => {
-    formData = {
-        email: form.nextElementSibling.email.value,
-        message: form.nextElementSibling.message.value,
-    };
-    console.log(formData);
-    localStorage.setItem('feedback-form-state', JSON.stringify(formData))
+let formObj = {
+  email: '',
+  message: '',
 };
-
-const submitFormHandler = event => {
+form.addEventListener('submit', onSubmit);
+form.addEventListener('input', throttle(onInput, 500));
+saveData();
+function onInput(event) {
+  formObj[event.target.name] = event.target.value;
+  localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(formObj));
+}
+function onSubmit(event) {
+  if (formObj) {
     event.preventDefault();
-
-    if (form.nextElementSibling.email.value === '' || form.nextElementSibling.message.value === ''){
-        const alertMessage = 'Proszę uzupełnić wszystkie pola formularza';
-        alert(alertMessage);
-    } else {
-        try {
-            const submitFormHandler = JSON.parse(
-                localStorage.getItem('feedback-form-state')
-            );
-            console.log('Submited form data: ', submitedFormData);
-            localStorage.removeItem('feedback-form-state');
-            form.nextElementSibling.email.value = '';
-            form.nextElementSibling.message.value = '';
-        } catch (error) {
-            console.log(error.name);
-            console.log(error.message);
-        }
-    }
+    console.log(formObj);
+    localStorage.removeItem(LOCALSTORAGE_KEY);
+    event.currentTarget.reset();
+  }
 }
-
-const reloadPage = () => {
-    try {
-        const savedFormData = JSON.parse(
-            localStorage.getItem('feedback-form-state')
-        );
-        if (savedFormData === null) {
-            return;
-        }
-        form.nextElementSibling.email.value = savedFormData.email;
-        form.nextElementSibling.message.value = savedFormData.message;
-    } catch (error) {
-        console.timeLog(error.name);
-        console.log(error.message)
-    }
+function saveData() {
+  const savedData = localStorage.getItem(LOCALSTORAGE_KEY);
+  const savedDataP = JSON.parse(savedData);
+  if (savedDataP) {
+    return returnData(savedDataP);
+  }
 }
-
-form.addEventListener('input', throttle(saveCurrentFormValue, 500));
-form.addEventListener('submit', submitFormHandler);
-form.addEventListener('load', reloadPage);
+function returnData(data) {
+  formObj.email = data.email;
+  formObj.message = data.message;
+  form.elements.email.value = formObj.email;
+  form.elements.message.value = formObj.message;
+}
