@@ -20,9 +20,10 @@ galleryItems.forEach(item => {
     gallery.append(link);
 });
 
-var lightbox = new simpleLightbox('.gallery .gallery__item', {
+var lightbox = new simpleLightbox('.gallery .gallery__link', {
     captionsData: 'alt',
     captionDelay: 250,
+    captionPosition: 'bottom',
 });
 
 
