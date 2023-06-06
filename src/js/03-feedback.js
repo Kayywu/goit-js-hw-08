@@ -1,9 +1,10 @@
 'use strict';
 
-import throttle from 'lodash.throttle';
+import throttle from 'lodash/throttle';
 
 const LOCALSTORAGE_KEY = 'feedback-form-state';
 const form = document.querySelector('.feedback-form');
+import throttle from 'lodash/throttle';
 let formObj = {
   email: '',
   message: '',
