@@ -28,5 +28,4 @@ var lightbox = new simpleLightbox('.gallery .gallery__link', {
 });
 
 
-
 console.log(galleryItems);
